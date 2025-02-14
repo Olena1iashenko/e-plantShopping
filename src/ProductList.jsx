@@ -6,7 +6,7 @@ import { addItem } from "./CartSlice";
 function ProductList() {
   const [showCart, setShowCart] = useState(false);
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-  const items = useSelector((state) => state.cart.items);
+  const cart = useSelector((state) => state.cart.items);
 
   const plantsArray = [
     {
@@ -290,6 +290,10 @@ function ProductList() {
     dispatch(addItem(item));
   };
 
+  const calculateTotalQuantity = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
   return (
     <div>
       <div className="navbar" style={styleObj}>
@@ -309,13 +313,11 @@ function ProductList() {
         </div>
         <div style={styleObjUl}>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>
               Plants
             </a>
           </div>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
               <h1 className="cart">
                 <svg
@@ -338,6 +340,9 @@ function ProductList() {
                     id="mainIconPathAttribute"
                   ></path>
                 </svg>
+                <span className="cart_quantity_count">
+                  {calculateTotalQuantity()}
+                </span>
               </h1>
             </a>
           </div>
@@ -362,10 +367,17 @@ function ProductList() {
                     <p className="">{plant.description}</p>
                     <p className="product-price">{plant.cost}</p>
                     <button
-                      className="product-button"
+                      className={`product-button ${
+                        cart.some((item) => item.name === plant.name)
+                          ? "added-to-cart"
+                          : ""
+                      }`}
                       onClick={() => handleAddToCart(plant)}
+                      disabled={cart.some((item) => item.name === plant.name)}
                     >
-                      Add to Cart
+                      {cart.some((item) => item.name === plant.name)
+                        ? "Added to Cart"
+                        : "Add to Cart"}
                     </button>
                   </div>
                 ))}
